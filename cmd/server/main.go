@@ -60,7 +60,7 @@ func run(ctx context.Context, getenv func(string) string, stdout io.Writer, stde
 			panic(err)
 		}
 	case <-serverDone:
-		_, _ = fmt.Fprintf(stdout, "graceful shutdown done\n")
+		_, _ = fmt.Fprintf(stdout, "server has shutdown on its own\n")
 	}
 
 	serverWG.Wait()
