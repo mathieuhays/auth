@@ -25,6 +25,8 @@ type UserStore struct {
 type UserStoreInterface interface {
 	Create(user User) (*User, error)
 	Get(id uuid.UUID) (*User, error)
+	Update(user User) (*User, error)
+	Delete(id uuid.UUID) error
 }
 
 func NewUserStore() *UserStore {
