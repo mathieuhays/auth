@@ -7,4 +7,22 @@
         <link rel="stylesheet" href="{{assets "vendors/bootstrap.min.css"}}">
     </head>
     <body>
+
+    <header class="container mt-5 mb-4 border-bottom border-1 border-black">
+        <div class="d-flex justify-content-between align-items-end">
+            <div class="h1">Auth Test</div>
+            <nav>
+                <ul class="list-inline">
+                    <li class="list-inline-item"><a href="/home">Home</a></li>
+                    {{if .User.ID}}
+                        <li class="list-inline-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="list-inline-item"><a href="/logout">Log out</a></li>
+                    {{else}}
+                        <li class="list-inline-item"><a href="/register">Register</a></li>
+                        <li class="list-inline-item"><a href="/login">Log in</a></li>
+                    {{end}}
+                </ul>
+            </nav>
+        </div>
+    </header>
 {{end}}

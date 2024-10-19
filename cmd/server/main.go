@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -11,12 +12,13 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 )
 
 var errInvalidPort = errors.New("invalid PORT")
 
-func run(getenv func(string) string, stdout io.Writer) error {
+func run(ctx context.Context, getenv func(string) string, stdout io.Writer, stderr io.Writer) error {
 	port := getenv("PORT")
 	if port == "" {
 		return errInvalidPort
@@ -36,10 +38,32 @@ func run(getenv func(string) string, stdout io.Writer) error {
 		WriteTimeout:      time.Second * 5,
 	}
 
-	_, _ = fmt.Fprintf(stdout, "Starting server on %s\n", server.Addr)
-	if err = server.ListenAndServe(); err != nil {
-		return err
+	serverWG := sync.WaitGroup{}
+	serverWG.Add(1)
+	serverDone := make(chan struct{}, 1)
+
+	go func() {
+		defer serverWG.Done()
+
+		_, _ = fmt.Fprintf(stdout, "Starting server on %s\n", server.Addr)
+		if err = server.ListenAndServe(); err != nil {
+			_, _ = fmt.Fprintf(stderr, "listen and serve err: %s\n", err)
+		}
+
+		serverDone <- struct{}{}
+	}()
+
+	select {
+	case <-ctx.Done():
+		_, _ = fmt.Fprintf(stdout, "graceful shutdown\n")
+		if err = server.Shutdown(ctx); err != nil {
+			panic(err)
+		}
+	case <-serverDone:
+		_, _ = fmt.Fprintf(stdout, "graceful shutdown done\n")
 	}
+
+	serverWG.Wait()
 
 	return nil
 }
@@ -55,7 +79,7 @@ func main() {
 		log.Println("no .env file found. skipping")
 	}
 
-	if err := run(os.Getenv, os.Stdout); err != nil {
+	if err := run(context.Background(), os.Getenv, os.Stdout, os.Stderr); err != nil {
 		log.Fatalf("run error: %s", err)
 	}
 
