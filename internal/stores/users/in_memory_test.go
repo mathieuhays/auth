@@ -1,4 +1,4 @@
-package stores
+package users
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestUserStore(t *testing.T) {
-	userStore := NewUserStore()
+	userStore := NewUserMemoryStore()
 	user := User{
 		ID:             uuid.New(),
 		Email:          "some@email.com",
