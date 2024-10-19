@@ -1,10 +1,17 @@
 package auth
 
-import "net/http"
+import (
+	"github.com/mathieuhays/auth/internal/handlers"
+	"github.com/mathieuhays/auth/internal/templates"
+	"log"
+	"net/http"
+)
 
-func NewServer(tpl TemplateEngineInterface) http.Handler {
+func NewServer(tpl *templates.Engine) http.Handler {
 	mux := http.NewServeMux()
 
+	mux.Handle("GET /", handlers.ErrorHandler(tpl))
+	mux.Handle("GET /{$}", handlers.HomeHandler(tpl))
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	// 1. home
@@ -13,5 +20,23 @@ func NewServer(tpl TemplateEngineInterface) http.Handler {
 	// 4. login
 	// 5. lost password
 
-	return mux
+	return loggerMiddleware(mux)
+}
+
+/*
+ANSI Color codes, 30-base, 90 range for bright variant
+0: Black
+1: Red
+2: Green
+3: Yellow
+4: Blue
+5: Magenta
+6: Cyan
+7: White
+*/
+func loggerMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("\u001b[32m%s\u001b[0m %s\n", r.Method, r.URL.Path)
+		next.ServeHTTP(w, r)
+	})
 }

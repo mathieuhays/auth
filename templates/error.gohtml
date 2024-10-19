@@ -1,0 +1,10 @@
+{{block "error" .}}
+    {{template "header"}}
+
+    <main class="container">
+        {{with .Error.Title}}<h1>{{.}}</h1>{{end}}
+        {{with .Error.Description}}<p>{{.}}</p>{{end}}
+    </main>
+
+    {{template "footer"}}
+{{end}}
