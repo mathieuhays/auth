@@ -1,6 +1,9 @@
 package users
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type UserMemoryStore struct {
 	items map[uuid.UUID]User
@@ -13,6 +16,10 @@ func NewUserMemoryStore() *UserMemoryStore {
 func (u *UserMemoryStore) Create(user User) (*User, error) {
 	if _, ok := u.items[user.ID]; ok {
 		return nil, ErrUserAlreadyExist
+	}
+
+	if user.CreatedAt.IsZero() {
+		user.CreatedAt = time.Now().UTC()
 	}
 
 	u.items[user.ID] = user

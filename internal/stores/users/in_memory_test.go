@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"testing"
+	"time"
 )
 
 func TestUserStore(t *testing.T) {
@@ -22,6 +23,10 @@ func TestUserStore(t *testing.T) {
 
 	if u.ID != user.ID {
 		t.Fatalf("id doesn't match. expected: %v. got: %v", user.ID, u.ID)
+	}
+
+	if u.CreatedAt.IsZero() {
+		t.Fatalf("createdAt expected to default to 'now' if not defined. value return is a zero value")
 	}
 
 	u2, err := userStore.Get(user.ID)
@@ -66,5 +71,21 @@ func TestUserStore(t *testing.T) {
 
 	if u4 != nil {
 		t.Fatalf("get after delete: user should be nil, got: %v", u4)
+	}
+
+	userWithDate := User{
+		ID:             uuid.New(),
+		Email:          "random@example.com",
+		EmailConfirmed: nil,
+		PasswordHash:   "blahblahblah",
+		CreatedAt:      time.Now().Add(time.Hour * -2),
+	}
+	u5, err := userStore.Create(userWithDate)
+	if err != nil {
+		t.Fatalf("unexpected error when creating user with date: %s", err)
+	}
+
+	if !u5.CreatedAt.Equal(userWithDate.CreatedAt) {
+		t.Fatalf("CreatedAt different after create(). expected: %v. got: %v", userWithDate.CreatedAt, u5.CreatedAt)
 	}
 }

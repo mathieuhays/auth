@@ -16,6 +16,7 @@ type User struct {
 	Email          string
 	EmailConfirmed *time.Time
 	PasswordHash   string
+	CreatedAt      time.Time
 }
 
 type UserStoreInterface interface {
