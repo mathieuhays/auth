@@ -2,6 +2,7 @@ package users
 
 import (
 	"github.com/google/uuid"
+	"github.com/mathieuhays/auth/internal/validate"
 	"time"
 )
 
@@ -14,6 +15,11 @@ func NewUserMemoryStore() *UserMemoryStore {
 }
 
 func (u *UserMemoryStore) Create(user User) (*User, error) {
+	emptyUUID := uuid.UUID{}
+	if user.ID == emptyUUID {
+		user.ID = uuid.New()
+	}
+
 	if _, ok := u.items[user.ID]; ok {
 		return nil, ErrUserAlreadyExist
 	}
@@ -31,6 +37,18 @@ func (u *UserMemoryStore) Create(user User) (*User, error) {
 func (u *UserMemoryStore) Get(id uuid.UUID) (*User, error) {
 	if localUser, ok := u.items[id]; ok {
 		return &localUser, nil
+	}
+
+	return nil, ErrUserNotFound
+}
+
+func (u *UserMemoryStore) GetByEmail(email string) (*User, error) {
+	if validate.Email(email) == nil {
+		for _, user := range u.items {
+			if user.Email == email {
+				return &user, nil
+			}
+		}
 	}
 
 	return nil, ErrUserNotFound

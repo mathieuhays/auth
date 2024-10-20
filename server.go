@@ -2,17 +2,20 @@ package auth
 
 import (
 	"github.com/mathieuhays/auth/internal/handlers"
+	"github.com/mathieuhays/auth/internal/services/user"
 	"github.com/mathieuhays/auth/internal/templates"
 	"log"
 	"net/http"
 )
 
-func NewServer(tpl *templates.Engine) http.Handler {
+func NewServer(tpl *templates.Engine, userService user.ServiceInterface) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.Handle("GET /", handlers.ErrorHandler(tpl))
 	mux.Handle("GET /{$}", handlers.HomeHandler(tpl))
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+
+	mux.Handle("/login", handlers.LoginHandler(userService))
 
 	// 1. home
 	// 2. dashboard -- use requireLogin middleware

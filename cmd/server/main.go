@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/mathieuhays/auth"
+	"github.com/mathieuhays/auth/internal/services/user"
+	"github.com/mathieuhays/auth/internal/stores/sessions"
+	"github.com/mathieuhays/auth/internal/stores/users"
 	"github.com/mathieuhays/auth/internal/templates"
 	"io"
 	"log"
@@ -31,9 +34,13 @@ func run(ctx context.Context, getenv func(string) string, stdout io.Writer, stde
 
 	tplEngine := templates.NewEngine(tpl)
 
+	userStore := users.NewUserMemoryStore()
+	sessionStore := sessions.NewSessionMemoryStore()
+	userService := user.NewService(userStore, sessionStore)
+
 	server := &http.Server{
 		Addr:              net.JoinHostPort("", port),
-		Handler:           auth.NewServer(&tplEngine),
+		Handler:           auth.NewServer(&tplEngine, userService),
 		ReadHeaderTimeout: time.Second * 5,
 		WriteTimeout:      time.Second * 5,
 	}
