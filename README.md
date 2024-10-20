@@ -1,4 +1,4 @@
-# Auth test
+# Auth test (WIP)
 
 Just wanted to implement a user auth from scratch
 
