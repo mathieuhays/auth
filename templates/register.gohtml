@@ -1,0 +1,65 @@
+{{block "register" .}}
+    {{template "header"}}
+
+    <main class="container">
+        <h1>Register</h1>
+
+        <form method="post" action="">
+            {{with .Form.Error}}
+                <div class="alert alert-danger my-4">{{.}}</div>
+            {{end}}
+
+            <div class="row my-4">
+                <div class="col">
+                    <input type="text"
+                           class="form-control {{if .Form.Fields.email.Error}}is-invalid{{end}}"
+                           placeholder="Email"
+                           aria-label="Email address"
+                           name="email"
+                            value="{{with .Form.Fields.email.Value}}{{.}}{{end}}">
+                    {{with .Form.Fields.email.Error}}
+                        <div class="invalid-feedback">{{.}}</div>
+                    {{end}}
+                </div>
+                <div class="col">
+                    <input type="text"
+                           class="form-control {{if .Form.Fields.email_confirm.Error}}is-invalid{{end}}"
+                           placeholder="Confirm email"
+                           aria-label="Confirm email"
+                           name="email_confirm"
+                            value="{{with .Form.Fields.email_confirm.Value}}{{.}}{{end}}">
+                    {{with .Form.Fields.email_confirm.Error}}
+                        <div class="invalid-feedback">{{.}}</div>
+                    {{end}}
+                </div>
+            </div>
+
+            <div class="row my-4">
+                <div class="col">
+                    <input type="password"
+                           class="form-control {{if .Form.Fields.password.Error}}is-invalid{{end}}"
+                           placeholder="Password"
+                           aria-label="Password"
+                           name="password">
+                    {{with .Form.Fields.password.Error}}
+                        <div class="invalid-feedback">{{.}}</div>
+                    {{end}}
+                </div>
+                <div class="col">
+                    <input type="password"
+                           class="form-control {{if .Form.Fields.password_confirm.Error}}is-invalid{{end}}"
+                           placeholder="Confirm Password"
+                           aria-label="Confirm Password"
+                           name="password_confirm">
+                    {{with .Form.Fields.password_confirm.Error}}
+                        <div class="invalid-feedback">{{.}}</div>
+                    {{end}}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </main>
+
+    {{template "footer"}}
+{{end}}

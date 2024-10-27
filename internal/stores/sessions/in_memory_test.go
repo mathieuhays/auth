@@ -157,6 +157,32 @@ func TestSessionMemoryStore_GetForUser(t *testing.T) {
 	}
 }
 
+func TestSessionMemoryStore_GetForToken(t *testing.T) {
+	store := NewSessionMemoryStore()
+	token := "test_token"
+	session := Session{
+		ID:        uuid.New(),
+		UserID:    uuid.New(),
+		Token:     token,
+		CSRFToken: "csrf_token",
+		CreatedAt: time.Now(),
+	}
+
+	_, err := store.Create(session)
+	if err != nil {
+		t.Fatalf("unexpected error when creating session: %s", err)
+	}
+
+	s, err := store.GetForToken(token)
+	if err != nil {
+		t.Fatalf("unexpected error while retrieving session: %s", err)
+	}
+
+	if s.ID != session.ID {
+		t.Errorf("session does not match. expected: %s. got: %s", session.ID, s.ID)
+	}
+}
+
 func TestSessionMemoryStore_Update(t *testing.T) {
 	store := NewSessionMemoryStore()
 	session := Session{
