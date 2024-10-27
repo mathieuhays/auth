@@ -9,5 +9,5 @@ Just wanted to implement a user auth from scratch
 - [ ] email confirmation
 - [ ] notification
 - [ ] lost password functionality
-- [ ] register
-- [ ] login
+- [x] register
+- [x] login
