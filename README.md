@@ -11,3 +11,4 @@ Just wanted to implement a user auth from scratch
 - [ ] lost password functionality
 - [x] register
 - [x] login
+- [ ] check if email is already associated to an account on registration
